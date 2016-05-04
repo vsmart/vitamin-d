@@ -29,11 +29,14 @@
       false))) 
          
 (defn handle-mouse [state] 
-  (let [button-name (is-in-button)]
-    (if (and (mouse-pressed?) button-name)
-      (increase-stats state button-name)
+  (let [button-name (is-in-button)
+        slots (:slots state)]
+    (if (= (nth slots 0) (nth slots 1) (nth slots 2)) 
+      (if (and (mouse-pressed?) button-name)
+        (increase-stats state button-name)
+        state)
       state)))
-
+    
 (defn check-for-tick [num]
   (= (mod (frame-count) num) 0))
 
