@@ -6,6 +6,33 @@
 (def mood-tick 60)
 (def success-tick 60)
 (def time-tick 60)
+(def btn-dimension {:w 150 :h 50})
+(def btn-out-coord {:x 150 :y 400})
+(def btn-in-coord {:x 350 :y 400})
+
+(defn increase-stats [state stat] 
+  (update-in state [:stats stat] inc))
+
+(defn is-in-button [] 
+  (if (and 
+        (> (mouse-x) (:x btn-out-coord))
+        (< (mouse-x) (+ (:x btn-out-coord) (:w btn-dimension)))
+        (> (mouse-y) (:y btn-out-coord)) 
+        (< (mouse-y) (+ (:y btn-out-coord) (:h btn-dimension))))
+    :mood 
+    (if (and 
+          (> (mouse-x) (:x btn-in-coord))
+          (< (mouse-x) (+ (:x btn-in-coord) (:w btn-dimension)))
+          (> (mouse-y) (:y btn-in-coord)) 
+          (< (mouse-y) (+ (:y btn-in-coord) (:h btn-dimension)))) 
+      :success
+      false))) 
+         
+(defn handle-mouse [state] 
+  (let [button-name (is-in-button)]
+    (if (and (mouse-pressed?) button-name)
+      (increase-stats state button-name)
+      state)))
 
 (defn check-for-tick [num]
   (= (mod (frame-count) num) 0))
@@ -47,8 +74,8 @@
   (text (str "Mood: " (:mood (:stats state))) 200 100)
   (text (str "Success: " (:success (:stats state))) 300 100)
   (text (str (:slots state)), 250 200)
-  (rect 150 400 150 50)
-  (rect 350 400 150 50)
+  (rect (:x btn-out-coord) (:y btn-out-coord) (:w btn-dimension) (:h btn-dimension))
+  (rect (:x btn-in-coord) (:y btn-in-coord) (:w btn-dimension) (:h btn-dimension))
   (fill 250)
   (text "Go outside" 160 420)
   (text "Stay inside" 360 420))
@@ -58,7 +85,8 @@
     (update-slots)
     (update-mood)
     (update-success)
-    (update-countdown)))
+    (update-countdown)
+    (handle-mouse)))
   
   
 (defsketch example
