@@ -9,34 +9,52 @@
 (def btn-dimension {:w 150 :h 50})
 (def btn-out-coord {:x 150 :y 400})
 (def btn-in-coord {:x 350 :y 400})
+(def initial-state
+  {:countdown 100
+   :stats
+     {:mood 50
+      :success 50}
+   :slots [0 0 0]})
 
-(defn increase-stats [state stat] 
+(defn reset [state]
+  (delay-frame 3000)
+  initial-state)
+
+(defn check-if-alive [state]
+  (if (or
+        (<= (:success (:stats state)) 0)
+        (<= (:mood (:stats state)) 0)
+        (<= (:countdown state) 0))
+    (reset state)
+    state))
+
+(defn increase-stats [state stat]
   (update-in state [:stats stat] inc))
 
-(defn is-in-button [] 
-  (if (and 
+(defn is-in-button []
+  (if (and
         (> (mouse-x) (:x btn-out-coord))
         (< (mouse-x) (+ (:x btn-out-coord) (:w btn-dimension)))
-        (> (mouse-y) (:y btn-out-coord)) 
+        (> (mouse-y) (:y btn-out-coord))
         (< (mouse-y) (+ (:y btn-out-coord) (:h btn-dimension))))
-    :mood 
-    (if (and 
+    :mood
+    (if (and
           (> (mouse-x) (:x btn-in-coord))
           (< (mouse-x) (+ (:x btn-in-coord) (:w btn-dimension)))
-          (> (mouse-y) (:y btn-in-coord)) 
-          (< (mouse-y) (+ (:y btn-in-coord) (:h btn-dimension)))) 
+          (> (mouse-y) (:y btn-in-coord))
+          (< (mouse-y) (+ (:y btn-in-coord) (:h btn-dimension))))
       :success
-      false))) 
-         
-(defn handle-mouse [state] 
+      false)))
+
+(defn handle-mouse [state]
   (let [button-name (is-in-button)
         slots (:slots state)]
-    (if (= (nth slots 0) (nth slots 1) (nth slots 2)) 
+    (if (= (nth slots 0) (nth slots 1) (nth slots 2))
       (if (and (mouse-pressed?) button-name)
         (increase-stats state button-name)
         state)
       state)))
-    
+
 (defn check-for-tick [num]
   (= (mod (frame-count) num) 0))
 
@@ -54,21 +72,17 @@
    (if (check-for-tick success-tick)
      (update-in state [:stats :success] dec)
      state))
-      
+
 (defn generate-slot []
-  (rand-int 5))
+  (rand-int 4))
 
 (defn update-slots [state]
-  (if (check-for-tick slots-tick) 
+  (if (check-for-tick slots-tick)
     (assoc state :slots [(generate-slot) (generate-slot) (generate-slot)])
     state))
-    
+
 (defn setup []
-  {:countdown 100
-   :stats 
-     {:mood 50 
-      :success 50}
-   :slots [0 0 0]})
+  initial-state)
 
 (defn draw [state]
   (background 255)
@@ -76,7 +90,7 @@
   (text (str "Time left: " (:countdown state)) 250 50)
   (text (str "Mood: " (:mood (:stats state))) 200 100)
   (text (str "Success: " (:success (:stats state))) 300 100)
-  (text (str (:slots state)), 250 200)
+  (text (str (:slots state)) 250 200)
   (rect (:x btn-out-coord) (:y btn-out-coord) (:w btn-dimension) (:h btn-dimension))
   (rect (:x btn-in-coord) (:y btn-in-coord) (:w btn-dimension) (:h btn-dimension))
   (fill 250)
@@ -85,13 +99,14 @@
 
 (defn update [state]
   (-> state
+    (check-if-alive)
     (update-slots)
     (update-mood)
     (update-success)
     (update-countdown)
     (handle-mouse)))
-  
-  
+
+
 (defsketch example
   :title "Vitamin D"
   :setup setup
