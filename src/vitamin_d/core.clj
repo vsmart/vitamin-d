@@ -2,12 +2,34 @@
   (:require [quil.core :refer :all]
             [quil.middleware :as m]))
 
+(def slots-tick 80)
+(def mood-tick 60)
+(def success-tick 60)
+(def time-tick 60)
 
+(defn check-for-tick [num]
+  (= (mod (frame-count) num) 0))
+
+(defn update-countdown [state]
+   (if (check-for-tick time-tick)
+     (update-in state [:countdown] dec)
+     state))
+
+(defn update-mood [state]
+   (if (check-for-tick mood-tick)
+     (update-in state [:stats :mood] dec)
+     state))
+
+(defn update-success [state]
+   (if (check-for-tick success-tick)
+     (update-in state [:stats :success] dec)
+     state))
+      
 (defn generate-slot []
   (rand-int 5))
 
 (defn update-slots [state]
-  (if (= (mod (frame-count) 80) 0) 
+  (if (check-for-tick slots-tick) 
     (assoc state :slots [(generate-slot) (generate-slot) (generate-slot)])
     state))
     
@@ -32,11 +54,13 @@
   (text "Stay inside" 360 420))
 
 (defn update [state]
-  (update-slots state))
+  (-> state
+    (update-slots)
+    (update-mood)
+    (update-success)
+    (update-countdown)))
   
   
-
-
 (defsketch example
   :title "Vitamin D"
   :setup setup
