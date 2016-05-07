@@ -84,13 +84,26 @@
 (defn setup []
   initial-state)
 
+(defn load-slot-image [i state]
+  (let [num (nth (:slots state) i)]
+  (cond
+    (= num 0) (load-image "white.png")
+    (= num 1) (load-image "blue.png")
+    (= num 2) (load-image "green.png")
+    :else (load-image "brown.png"))))
+
+(defn draw-slots [state]
+  (doseq [i (range 3)]
+    (image (load-slot-image i state) (+ 200 (* 50 i)) 250 40 40)))
+
 (defn draw [state]
   (background 255)
   (fill 100 40 80)
   (text (str "Time left: " (:countdown state)) 250 50)
   (text (str "Mood: " (:mood (:stats state))) 200 100)
   (text (str "Success: " (:success (:stats state))) 300 100)
-  (text (str (:slots state)) 250 200)
+  ;(text (str (:slots state)) 250 200)
+  (draw-slots state)
   (rect (:x btn-out-coord) (:y btn-out-coord) (:w btn-dimension) (:h btn-dimension))
   (rect (:x btn-in-coord) (:y btn-in-coord) (:w btn-dimension) (:h btn-dimension))
   (fill 250)
