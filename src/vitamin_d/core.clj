@@ -8,7 +8,13 @@
 (def time-tick 60)
 (def btn-dimension {:w 150 :h 50})
 (def btn-out-coord {:x 150 :y 400})
-(def btn-in-coord {:x 350 :y 400})
+(def btn-in-coord  {:x 350 :y 400})
+(def stats-icons   {:mood "mood.png"
+                    :success "success.png"})
+(def slot-images   {:0 "white.png"
+                    :1 "blue.png"
+                    :2 "green.png"
+                    :3 "brown.png"})
 (def initial-state
   {:countdown 100
    :stats
@@ -84,18 +90,38 @@
 (defn setup []
   initial-state)
 
-(defn draw [state]
-  (background 255)
+(defn load-slot-image [i state]
+  (let [num (nth (:slots state) i)]
+    (load-image ((keyword (str num)) slot-images))))
+
+ (defn draw-stats-counter [state description key x y]
+  (text description x (- y 20))
+  ; divided by 10 because only 1 icon per every 10 stats points
+  (doseq [i (range (/ (key (:stats state)) 10))]
+    (image (load-image (key stats-icons)) (+ x (* 25 i)) y 20 20)))
+
+(defn draw-stats [state]
   (fill 100 40 80)
   (text (str "Time left: " (:countdown state)) 250 50)
-  (text (str "Mood: " (:mood (:stats state))) 200 100)
-  (text (str "Success: " (:success (:stats state))) 300 100)
-  (text (str (:slots state)) 250 200)
+  (draw-stats-counter state "Mood:" :mood 100 100)
+  (draw-stats-counter state "Success:" :success 300 100))
+
+(defn draw-slots [state]
+  (doseq [i (range 3)]
+    (image (load-slot-image i state) (+ 200 (* 50 i)) 250 40 40)))
+
+(defn draw-buttons []
   (rect (:x btn-out-coord) (:y btn-out-coord) (:w btn-dimension) (:h btn-dimension))
   (rect (:x btn-in-coord) (:y btn-in-coord) (:w btn-dimension) (:h btn-dimension))
   (fill 250)
   (text "Go outside" 160 420)
   (text "Stay inside" 360 420))
+
+(defn draw [state]
+  (background 255)
+  (draw-stats state)
+  (draw-slots state)
+  (draw-buttons))
 
 (defn update [state]
   (-> state
