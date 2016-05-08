@@ -6,15 +6,15 @@
 (def mood-tick 60)
 (def success-tick 60)
 (def time-tick 60)
-(def btn-dimension {:w 150 :h 50})
-(def btn-out-coord {:x 150 :y 400})
-(def btn-in-coord  {:x 350 :y 400})
-(def stats-icons   {:mood "mood.png"
-                    :success "success.png"})
-(def slot-images   {:0 "white.png"
-                    :1 "blue.png"
-                    :2 "green.png"
-                    :3 "brown.png"})
+(def btn-dimension {:w 180 :h 50})
+(def btn-out-coord {:x 100 :y 450})
+(def btn-in-coord  {:x 320 :y 450})
+(def stats-icons   {:mood "sun.png"
+                    :success "money.png"})
+(def slot-images   {:0 "beers.png"
+                    :1 "computer.png"
+                    :2 "fries.png"
+                    :3 "book.png"})
 (def initial-state
   {:countdown 100
    :stats
@@ -88,23 +88,31 @@
     state))
 
 (defn setup []
+  (text-font (create-font "Quicksand-Bold" 30))
   initial-state)
 
 (defn load-slot-image [i state]
   (let [num (nth (:slots state) i)]
     (load-image ((keyword (str num)) slot-images))))
 
- (defn draw-stats-counter [state description key x y]
-  (text description x (- y 20))
+(defn draw-stats-counter [state description key x y]
+ (text description x (- y 20))
   ; divided by 10 because only 1 icon per every 10 stats points
-  (doseq [i (range (/ (key (:stats state)) 10))]
-    (image (load-image (key stats-icons)) (+ x (* 25 i)) y 20 20)))
+ (doseq [i (range (/ (key (:stats state)) 10))]
+   (image (load-image (key stats-icons)) (+ x (* 25 i)) y 20 18)))
 
+(defn draw-ui []
+  (no-stroke)
+  (fill 100 200 200)
+  (rect 100 68 400 20)
+  (fill 0))
+  
 (defn draw-stats [state]
-  (fill 100 40 80)
-  (text (str "Time left: " (:countdown state)) 250 50)
-  (draw-stats-counter state "Mood:" :mood 100 100)
-  (draw-stats-counter state "Success:" :success 300 100))
+  (text-size 30)
+  (text (str "Time left: " (:countdown state) "s") 200 80)
+  (text-size 16)
+  (draw-stats-counter state "MOOD" :mood 100 180)
+  (draw-stats-counter state "SUCCESS" :success 380 180))
 
 (defn draw-slots [state]
   (doseq [i (range 3)]
@@ -119,6 +127,7 @@
 
 (defn draw [state]
   (background 255)
+  (draw-ui)
   (draw-stats state)
   (draw-slots state)
   (draw-buttons))
