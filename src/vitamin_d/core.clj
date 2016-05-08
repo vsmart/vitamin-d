@@ -92,23 +92,28 @@
     (= num 2) (load-image "green.png")
     :else (load-image "brown.png"))))
 
+(defn draw-stats [state]
+  (fill 100 40 80)
+  (text (str "Time left: " (:countdown state)) 250 50)
+  (text (str "Mood: " (:mood (:stats state))) 200 100)
+  (text (str "Success: " (:success (:stats state))) 300 100))
+
 (defn draw-slots [state]
   (doseq [i (range 3)]
     (image (load-slot-image i state) (+ 200 (* 50 i)) 250 40 40)))
 
-(defn draw [state]
-  (background 255)
-  (fill 100 40 80)
-  (text (str "Time left: " (:countdown state)) 250 50)
-  (text (str "Mood: " (:mood (:stats state))) 200 100)
-  (text (str "Success: " (:success (:stats state))) 300 100)
-  ;(text (str (:slots state)) 250 200)
-  (draw-slots state)
+(defn draw-buttons []
   (rect (:x btn-out-coord) (:y btn-out-coord) (:w btn-dimension) (:h btn-dimension))
   (rect (:x btn-in-coord) (:y btn-in-coord) (:w btn-dimension) (:h btn-dimension))
   (fill 250)
   (text "Go outside" 160 420)
   (text "Stay inside" 360 420))
+
+(defn draw [state]
+  (background 255)
+  (draw-stats state)
+  (draw-slots state)
+  (draw-buttons))
 
 (defn update [state]
   (-> state
