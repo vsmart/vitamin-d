@@ -1,6 +1,7 @@
 (ns vitamin-d.core
   (:require [quil.core :refer :all]
-            [quil.middleware :as m]))
+            [quil.middleware :as m])
+  (:gen-class))
 
 (def slots-tick 80)
 (def mood-tick 60)
@@ -106,7 +107,7 @@
   (fill 100 200 200)
   (rect 100 68 400 20)
   (fill 0))
-  
+
 (defn draw-stats [state]
   (text-size 30)
   (text (str "Time left: " (:countdown state) "s") 200 80)

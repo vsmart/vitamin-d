@@ -3,4 +3,5 @@
   :url "http://example.com/FIXME"
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [quil "2.2.6" :exclusions [org.clojure/clojure]]]
-  :main vitamin-d.core)
+  :main vitamin-d.core
+  :aot  [vitamin-d.core])
