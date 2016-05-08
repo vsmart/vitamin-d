@@ -3,7 +3,7 @@
             [quil.middleware :as m])
   (:gen-class))
 
-(def slots-tick 80)
+(def slots-tick 40)
 (def mood-tick 60)
 (def success-tick 60)
 (def time-tick 60)
@@ -104,8 +104,13 @@
 
 (defn draw-ui []
   (no-stroke)
+  ; count down bar
   (fill 100 200 200)
   (rect 100 68 400 20)
+  ; buttons 
+  (rect (:x btn-out-coord) (:y btn-out-coord) (:w btn-dimension) (:h btn-dimension))
+  (rect (:x btn-in-coord) (:y btn-in-coord) (:w btn-dimension) (:h btn-dimension))
+  ; switch to black for all the text
   (fill 0))
 
 (defn draw-stats [state]
@@ -117,14 +122,23 @@
 
 (defn draw-slots [state]
   (doseq [i (range 3)]
-    (image (load-slot-image i state) (+ 200 (* 50 i)) 250 40 40)))
+    (image (load-slot-image i state) (+ 100 (* 150 i)) 260 100 100)))
 
 (defn draw-buttons []
-  (rect (:x btn-out-coord) (:y btn-out-coord) (:w btn-dimension) (:h btn-dimension))
-  (rect (:x btn-in-coord) (:y btn-in-coord) (:w btn-dimension) (:h btn-dimension))
-  (fill 250)
-  (text "Go outside" 160 420)
-  (text "Stay inside" 360 420))
+  (text-size 28)
+  ; this can probably be refactor
+  (if (and
+           (mouse-pressed?)
+           (= (is-in-button) :mood))
+    (fill 255)
+    (fill 0))
+  (text "Go outside" 110 485)
+  (if (and
+           (mouse-pressed?)
+           (= (is-in-button) :success))
+    (fill 255)
+    (fill 0))
+  (text "Stay inside" 330 485))
 
 (defn draw [state]
   (background 255)
