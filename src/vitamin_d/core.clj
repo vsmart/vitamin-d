@@ -17,7 +17,7 @@
                     :2 "fries.png"
                     :3 "book.png"})
 (def initial-state
-  {:countdown 100
+  {:countdown 60
    :stats
      {:mood 50
       :success 50}
