@@ -21,10 +21,10 @@
    :stats
      {:mood 50
       :success 50}
-   :slots [0 0 0]})
+   :slots [0 0 0]
+   :running false})
 
 (defn reset [state]
-  (delay-frame 3000)
   initial-state)
 
 (defn check-if-alive [state]
@@ -107,7 +107,7 @@
   ; count down bar
   (fill 100 200 200)
   (rect 100 68 400 20)
-  ; buttons 
+  ; buttons
   (rect (:x btn-out-coord) (:y btn-out-coord) (:w btn-dimension) (:h btn-dimension))
   (rect (:x btn-in-coord) (:y btn-in-coord) (:w btn-dimension) (:h btn-dimension))
   ; switch to black for all the text
@@ -140,22 +140,35 @@
     (fill 0))
   (text "Stay inside" 330 485))
 
+(defn draw-start-screen []
+  (image (load-image "start.png") 0 0))
+
 (defn draw [state]
   (background 255)
-  (draw-ui)
-  (draw-stats state)
-  (draw-slots state)
-  (draw-buttons))
+  (if (:running state)
+    (do
+      (draw-ui)
+      (draw-stats state)
+      (draw-slots state)
+      (draw-buttons))
+    (draw-start-screen)))
+
+(defn update-running [state]
+  (if (and
+        (= (mod (frame-count) 100) 0)
+        (= (:running state) false))
+    (assoc state :running true)
+    state))
 
 (defn update [state]
   (-> state
+    (update-running)
     (check-if-alive)
     (update-slots)
     (update-mood)
     (update-success)
     (update-countdown)
     (handle-mouse)))
-
 
 (defsketch example
   :title "Vitamin D"
