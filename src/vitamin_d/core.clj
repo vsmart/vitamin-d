@@ -17,7 +17,7 @@
                     :2 "fries.png"
                     :3 "book.png"})
 (def initial-state
-  {:countdown 100
+  {:countdown 10
    :stats
      {:mood 50
       :success 50}
@@ -151,10 +151,19 @@
       (draw-stats state)
       (draw-slots state)
       (draw-buttons))
-    (draw-start-screen)))
+    (do
+      (draw-start-screen))))
+
+(defn update-running [state]
+  (if (and
+        (= (mod (frame-count) 100) 0)
+        (= (:running state) false))
+    (assoc state :running true)
+    state))
 
 (defn update [state]
   (-> state
+    (update-running)
     (check-if-alive)
     (update-slots)
     (update-mood)
