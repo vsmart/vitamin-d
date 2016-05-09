@@ -17,7 +17,7 @@
                     :2 "fries.png"
                     :3 "book.png"})
 (def initial-state
-  {:countdown 10
+  {:countdown 100
    :stats
      {:mood 50
       :success 50}
@@ -151,8 +151,7 @@
       (draw-stats state)
       (draw-slots state)
       (draw-buttons))
-    (do
-      (draw-start-screen))))
+    (draw-start-screen)))
 
 (defn update-running [state]
   (if (and
